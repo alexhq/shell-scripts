@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    echo "Usage: doc.sh [port]"
+    echo "Starts a MySQL container with the specified port"
+    echo "If no port is specified, the default port is 33060"
+    exit 0
+fi
+MYSQL_VERSION=8.0.39
+MYSQL_ROOT_PASSWORD=password
+MYSQL_PORT=3306
+if [ -z "$1" ]; then
+    EXPOSED_PORT=33060
+else
+    EXPOSED_PORT=$1
+fi
+CONTAINER_NAME=mysql-dev-port-$EXPOSED_PORT
+docker run -p "$EXPOSED_PORT":$MYSQL_PORT --name "$CONTAINER_NAME" -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -d mysql:$MYSQL_VERSION
+echo "MySQL container $CONTAINER_NAME started with port $EXPOSED_PORT"
+echo "To stop the container run: docker stop $CONTAINER_NAME"
+echo "To remove the container run: docker rm $CONTAINER_NAME"
+echo "To connect to the container run: docker exec -it $CONTAINER_NAME mysql -uroot -p"
+echo "To connect to the container with a client, use the following credentials:"
+echo "Host: localhost"
+echo "Port: $MYSQL_PORT"
+echo "User: root"
+echo "Password: $MYSQL_ROOT_PASSWORD"
+echo Connection string: jdbc: mysql://root:$MYSQL_ROOT_PASSWORD@127.0.0.1:"$EXPOSED_PORT"
